@@ -6,6 +6,7 @@ export default defineSchema({
     title: v.string(),
     description: v.string(),
     date: v.string(),
+    isArchived: v.optional(v.boolean()),
   })
     // 为 description 字段创建搜索索引
     .searchIndex("search_description", { searchField: "description" })

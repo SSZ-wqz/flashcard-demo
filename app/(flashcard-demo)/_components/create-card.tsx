@@ -12,6 +12,7 @@ export default function CreateCard({ onCreateCard }: CreateCardProps) {
     title: "",
     description: "",
     date: "",
+    isArchived: false,
   });
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -25,6 +26,7 @@ export default function CreateCard({ onCreateCard }: CreateCardProps) {
       title: "",
       description: "",
       date: "",
+      isArchived: false,
     });
   }
 

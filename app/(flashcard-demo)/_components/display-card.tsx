@@ -2,15 +2,24 @@
 
 import "../_css/display-card.css";
 import { api } from "@/convex/_generated/api";
-import { useQuery } from "convex/react";
+import { useQuery, useMutation } from "convex/react";
 import { useState, useRef, useEffect } from "react";
 import { Loader } from "@/components/ui/loader";
+import { Button } from "@/components/ui/button";
+import { Globe } from "lucide-react";
 
 export default function DisplayCard() {
-  const cards = useQuery(api.cards.getAllCards);
+  const cardsAll = useQuery(api.cards.getAllCards);
+  const cardsUnarchived = useQuery(api.cards.getUnarchivedCards);
+  const cardsArchived = useQuery(api.cards.getArchivedCards);
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
   const [cardHeight, setCardHeight] = useState<number>(200);
   const cardRef = useRef<HTMLDivElement | null>(null);
+  const [cardsFiltered, setCardsFiltered] = useState<any[]>([]);
+
+  useEffect(() => {
+    setCardsFiltered(cardsAll || []);
+  }, [cardsAll]);
 
   useEffect(() => {
     if (expandedCardId && cardRef.current) {
@@ -29,15 +38,42 @@ export default function DisplayCard() {
     }
   }, [expandedCardId]);
 
+  console.log(cardsUnarchived);
+  console.log(cardsArchived);
+
+  const setFilterCards = (cards: any) => {
+    setCardsFiltered(cards);
+  };
+
   return (
     <div className="w-1/3 bg-blue-100 m-4 ml-0 rounded-lg h-[calc(100vh-2rem)] overflow-hidden relative">
       <header className="header-container flex justify-between items-center p-4">
         <h1 className="text-2xl font-bold">Display Card</h1>
+        <div className="flex gap-2">
+        <Button 
+            variant="outline"
+            onClick={() => setFilterCards(cardsAll)}
+          >
+            所有 <Globe />
+          </Button>
+          <Button 
+            className="bg-red-300 text-black hover:bg-red-500 hover:text-white"
+            onClick={() => setFilterCards(cardsUnarchived)}
+          >
+            未学会 ❌
+          </Button>
+          <Button 
+            className="bg-green-300 text-black hover:bg-green-500 hover:text-white"
+            onClick={() => setFilterCards(cardsArchived)}
+          >
+            已学会 ✅
+          </Button>
+        </div>
       </header>
       <div className="h-[30px] bg-gradient-to-b from-blue-50/80 via-blue-50/50 to-transparent absolute top-[4rem] left-0 right-0 z-10"/>
       <main className="p-4 pt-24 space-y-6 overflow-y-auto h-[calc(100%-4rem)] pb-96">
-        {cards ? (
-          cards.map((card) => (
+        {cardsFiltered ? (
+          cardsFiltered.map((card) => (
             <div
               key={card._id}
               ref={expandedCardId === card._id ? cardRef : null}
@@ -63,7 +99,7 @@ export default function DisplayCard() {
             </div>
           ))
         ) : (
-          <div className="flex justify-center items-center h-full">
+          <div className="flex justify-center items-center h-full mt-10">
             <Loader size="lg" /> &nbsp;Loading...
           </div>
         )}

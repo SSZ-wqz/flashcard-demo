@@ -3,4 +3,5 @@ export interface Card {
   title: string;
   description: string;
   date: string;
+  isArchived?: boolean;
 }
