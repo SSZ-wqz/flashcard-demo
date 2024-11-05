@@ -4,6 +4,7 @@ import "../_css/display-card.css";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
 import { useState, useRef, useEffect } from "react";
+import { Loader } from "@/components/ui/loader";
 
 export default function DisplayCard() {
   const cards = useQuery(api.cards.getAllCards);
@@ -35,31 +36,37 @@ export default function DisplayCard() {
       </header>
       <div className="h-[30px] bg-gradient-to-b from-blue-50/80 via-blue-50/50 to-transparent absolute top-[4rem] left-0 right-0 z-10"/>
       <main className="p-4 pt-24 space-y-6 overflow-y-auto h-[calc(100%-4rem)]">
-        {cards?.map((card) => (
-          <div
-            key={card._id}
-            ref={expandedCardId === card._id ? cardRef : null}
-            className={`card-container perspective-1000 ${
-              expandedCardId === card._id ? 'flipped' : ''
-            }`}
-            style={{ height: expandedCardId === card._id ? `${cardHeight}px` : '200px' }}
-            onClick={() => setExpandedCardId(expandedCardId === card._id ? null : card._id)}
-          >
-            <div className="card-inner relative w-full h-full transition-transform duration-500">
-              <div className="card-front absolute w-full h-full bg-white rounded-lg p-6 shadow-md hover:shadow-lg backface-hidden">
-                <div className="flex flex-col justify-between h-full">
-                  <h2 className="text-xl font-bold">{card.title}</h2>
-                  <p className="text-gray-400 text-sm">{card.date}</p>
+        {cards ? (
+          cards.map((card) => (
+            <div
+              key={card._id}
+              ref={expandedCardId === card._id ? cardRef : null}
+              className={`card-container perspective-1000 ${
+                expandedCardId === card._id ? 'flipped' : ''
+              }`}
+              style={{ height: expandedCardId === card._id ? `${cardHeight}px` : '200px' }}
+              onClick={() => setExpandedCardId(expandedCardId === card._id ? null : card._id)}
+            >
+              <div className="card-inner relative w-full h-full transition-transform duration-500">
+                <div className="card-front absolute w-full h-full bg-white rounded-lg p-6 shadow-md hover:shadow-lg backface-hidden">
+                  <div className="flex flex-col justify-between h-full">
+                    <h2 className="text-xl font-bold">{card.title}</h2>
+                    <p className="text-gray-400 text-sm">{card.date}</p>
+                  </div>
                 </div>
-              </div>
-              <div className="card-back absolute w-full h-full bg-white rounded-lg p-6 shadow-md backface-hidden">
-                <div className="flex flex-col justify-center h-full">
-                  <p className="text-gray-600">{card.description}</p>
+                <div className="card-back absolute w-full h-full bg-white rounded-lg p-6 shadow-md backface-hidden">
+                  <div className="flex flex-col justify-center h-full">
+                    <p className="text-gray-600">{card.description}</p>
+                  </div>
                 </div>
               </div>
             </div>
+          ))
+        ) : (
+          <div className="flex justify-center items-center h-full">
+            <Loader size="lg" /> &nbsp;Loading...
           </div>
-        ))}
+        )}
       </main>
     </div>
   );
