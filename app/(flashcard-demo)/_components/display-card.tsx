@@ -35,7 +35,7 @@ export default function DisplayCard() {
         <h1 className="text-2xl font-bold">Display Card</h1>
       </header>
       <div className="h-[30px] bg-gradient-to-b from-blue-50/80 via-blue-50/50 to-transparent absolute top-[4rem] left-0 right-0 z-10"/>
-      <main className="p-4 pt-24 space-y-6 overflow-y-auto h-[calc(100%-4rem)]">
+      <main className="p-4 pt-24 space-y-6 overflow-y-auto h-[calc(100%-4rem)] pb-96">
         {cards ? (
           cards.map((card) => (
             <div
