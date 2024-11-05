@@ -3,11 +3,30 @@
 import "../_css/display-card.css";
 import { api } from "@/convex/_generated/api";
 import { useQuery } from "convex/react";
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
 
 export default function DisplayCard() {
   const cards = useQuery(api.cards.getAllCards);
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null);
+  const [cardHeight, setCardHeight] = useState<number>(200);
+  const cardRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (expandedCardId && cardRef.current) {
+      const frontElement = cardRef.current.querySelector('.card-front');
+      const backElement = cardRef.current.querySelector('.card-back');
+      const frontHeight = frontElement?.scrollHeight || 200;
+      const backHeight = backElement?.scrollHeight || 200;
+      
+      const frontTextLength = frontElement?.textContent?.length || 0;
+      const backTextLength = backElement?.textContent?.length || 0;
+      const additionalHeight = (frontTextLength + backTextLength) * 0.5; // 根据字数调整高度
+
+      setCardHeight(Math.max(frontHeight, backHeight) + additionalHeight);
+    } else {
+      setCardHeight(200);
+    }
+  }, [expandedCardId]);
 
   return (
     <div className="w-1/3 bg-blue-100 m-4 ml-0 rounded-lg h-[calc(100vh-2rem)] overflow-hidden relative">
@@ -15,13 +34,15 @@ export default function DisplayCard() {
         <h1 className="text-2xl font-bold">Display Card</h1>
       </header>
       <div className="h-[30px] bg-gradient-to-b from-blue-50/80 via-blue-50/50 to-transparent absolute top-[4rem] left-0 right-0 z-10"/>
-      <main className="p-4 space-y-6 overflow-y-auto h-[calc(100%-4rem)] mb-10">
+      <main className="p-4 pt-24 space-y-6 overflow-y-auto h-[calc(100%-4rem)]">
         {cards?.map((card) => (
           <div
             key={card._id}
-            className={`card-container h-[200px] perspective-1000 ${
+            ref={expandedCardId === card._id ? cardRef : null}
+            className={`card-container perspective-1000 ${
               expandedCardId === card._id ? 'flipped' : ''
             }`}
+            style={{ height: expandedCardId === card._id ? `${cardHeight}px` : '200px' }}
             onClick={() => setExpandedCardId(expandedCardId === card._id ? null : card._id)}
           >
             <div className="card-inner relative w-full h-full transition-transform duration-500">

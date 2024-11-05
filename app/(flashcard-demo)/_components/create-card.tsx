@@ -16,7 +16,16 @@ export default function CreateCard({ onCreateCard }: CreateCardProps) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
+    if (!formData.title || !formData.description || !formData.date) {
+      alert("All fields are required!");
+      return;
+    }
     onCreateCard(formData);
+    setFormData({
+      title: "",
+      description: "",
+      date: "",
+    });
   }
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
