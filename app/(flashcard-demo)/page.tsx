@@ -2,24 +2,24 @@
 
 import CreateCard from "./_components/create-card";
 import DisplayCard from "./_components/display-card";
-import { Card } from "./_interfaces/card-types";
-import { useState } from "react";
+import { api } from "@/convex/_generated/api";
+import { useMutation } from "convex/react";
 
 export default function Home() {
-  const [cards, setCards] = useState<Card[]>([]);  
-
-  const handleCreateCard = (card: Omit<Card, "id">) => {
-    const newCard: Card = {
-      ...card,
-      id: Date.now().toString(),
-    }
-    setCards([...cards, newCard]);
+  const createCard = useMutation(api.cards.createCard);
+  
+  const handleCreateCard = (card: any) => {
+    createCard({
+      title: card.title,
+      description: card.description,
+      date: card.date,
+    });
   };
   
   return (
     <div className="flex h-screen overflow-hidden">
       <CreateCard onCreateCard={handleCreateCard} />
-      <DisplayCard cards={cards} />
+      <DisplayCard />
     </div>
   );
 }
