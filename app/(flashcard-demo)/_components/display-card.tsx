@@ -171,7 +171,7 @@ export default function DisplayCard() {
                   }}
                 >
                   <ToggleRight size={18} color="white" className="mb-2"/>
-                  <span className="text-xs text-[#f4f4f4]">归档</span>
+                  <span className="text-xs text-[#f4f4f4]">切换状态</span>
                 </button>
                 <button 
                   className="delete-button-inner flex flex-col items-center justify-center shadow-md hover:shadow-xl"
