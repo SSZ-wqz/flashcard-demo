@@ -7,6 +7,7 @@ import { useState, useRef, useEffect } from "react";
 import { Loader } from "@/components/ui/loader";
 import { Button } from "@/components/ui/button";
 import { Globe, Trash2, ToggleRight } from "lucide-react";
+import { cn } from "@/lib/utils";
 
 export default function DisplayCard() {
   // 这些是convex的apis
@@ -15,7 +16,7 @@ export default function DisplayCard() {
   const cardsArchived = useQuery(api.cards.getArchivedCards);
   const updateCard = useMutation(api.cards.updateCard);
   const deleteCard = useMutation(api.cards.deleteCard);
-  
+
   // 这些是组件的state
   const [expandedCardId, setExpandedCardId] = useState<string | null>(null); // 当前展开的卡片id
   const [cardHeight, setCardHeight] = useState<number>(200); // 卡片高度
@@ -40,7 +41,7 @@ export default function DisplayCard() {
       const backElement = cardRef.current.querySelector('.card-back');
       const frontHeight = frontElement?.scrollHeight || 200;
       const backHeight = backElement?.scrollHeight || 200;
-      
+
       const frontTextLength = frontElement?.textContent?.length || 0;
       const backTextLength = backElement?.textContent?.length || 0;
       const additionalHeight = (frontTextLength + backTextLength) * 0.5; // 根据字数调整高度
@@ -85,7 +86,7 @@ export default function DisplayCard() {
         cardElement.style.transform = `translateX(0)`;
         (cardElement.querySelector('.delete-button') as HTMLElement)!.style.opacity = '0'; // 设置删除按钮的透明度为0
         setCardBorderRadius('12px'); // 恢复原始圆角
-        setTimeout(() => { 
+        setTimeout(() => {
           (cardElement.querySelector('.delete-button') as HTMLElement)!.style.display = 'none'; // 设置删除按钮的显示
         }, 100);
       }
@@ -108,19 +109,19 @@ export default function DisplayCard() {
       <header className="header-container flex justify-between items-center p-4">
         <h1 className="text-2xl font-bold">Display Card</h1>
         <div className="flex gap-2">
-          <Button 
+          <Button
             variant="outline"
             onClick={() => setFilterCards(cardsAll)}
           >
             所有 <Globe />
           </Button>
-          <Button 
+          <Button
             className="bg-red-300 text-black hover:bg-red-500 hover:text-white"
             onClick={() => setFilterCards(cardsUnarchived)}
           >
             未学会 ❌
           </Button>
-          <Button 
+          <Button
             className="bg-green-300 text-black hover:bg-green-500 hover:text-white"
             onClick={() => setFilterCards(cardsArchived)}
           >
@@ -128,16 +129,15 @@ export default function DisplayCard() {
           </Button>
         </div>
       </header>
-      <div className="h-[30px] bg-gradient-to-b from-blue-50/80 via-blue-50/50 to-transparent absolute top-[4rem] left-0 right-0 z-10"/>
+      <div className="h-[30px] bg-gradient-to-b from-blue-50/80 via-blue-50/50 to-transparent absolute top-[4rem] left-0 right-0 z-10" />
       <main className="p-4 pt-24 space-y-6 overflow-y-auto h-[calc(100%-4rem)] pb-96">
         {cardsFiltered && cardsFiltered.length > 0 ? (
           cardsFiltered.map((card) => (
             <div
               key={card._id}
               ref={expandedCardId === card._id ? cardRef : null}
-              className={`card-container perspective-1000 relative ${
-                expandedCardId === card._id ? 'flipped' : ''
-              }`}
+              className={`card-container perspective-1000 relative ${expandedCardId === card._id ? 'flipped' : ''
+                }`}
               style={{
                 height: expandedCardId === card._id ? `${cardHeight}px` : '200px',
                 borderRadius: cardBorderRadius, // 使用状态变量
@@ -147,9 +147,14 @@ export default function DisplayCard() {
             >
               <div className="card-inner w-full h-full transition-transform duration-500">
                 <div className="card-front absolute w-full h-full bg-white rounded-lg p-6 shadow-md hover:shadow-lg backface-hidden">
-                  <div className="flex flex-col justify-between h-full">
+                  <div className="flex flex-col relative justify-between h-full">
                     <h2 className="text-xl font-bold">{card.title}</h2>
                     <p className="text-gray-400 text-sm">{card.date}</p>
+                    <p className={cn("text-gray-400 text-sm absolute bottom-0 rounded-lg px-2 py-[2px]", 
+                      card.isArchived ? 'bg-green-500 text-white' : 'bg-red-500 text-white'
+                    )}>
+                      {card.isArchived ? '已学会' : '未学会'}
+                    </p>
                   </div>
                 </div>
                 <div className="card-back absolute w-full h-full bg-white rounded-lg p-6 shadow-md backface-hidden">
@@ -158,11 +163,11 @@ export default function DisplayCard() {
                   </div>
                 </div>
               </div>
-              <div 
-                className="delete-button absolute top-0 right-0 h-full bg-gradient-to-b from-blue-50/80 via-blue-50/50 to-transparentflex flex-col items-center justify-center translate-x-[100%]" 
+              <div
+                className="delete-button absolute top-0 right-0 h-full bg-gradient-to-b from-blue-50/80 via-blue-50/50 to-transparentflex flex-col items-center justify-center translate-x-[100%]"
                 style={{ width: '75px', opacity: '0', transition: 'opacity 0.2s' }}
               >
-                <button 
+                <button
                   className="delete-button-inner flex flex-col items-center justify-center shadow-md hover:shadow-xl mb-2"
                   id="archive-button"
                   onClick={async () => {
@@ -170,14 +175,14 @@ export default function DisplayCard() {
                     setFilterCards(prevCard); // 更新卡片列表
                   }}
                 >
-                  <ToggleRight size={18} color="white" className="mb-2"/>
+                  <ToggleRight size={18} color="white" className="mb-2" />
                   <span className="text-xs text-[#f4f4f4]">切换状态</span>
                 </button>
-                <button 
+                <button
                   className="delete-button-inner flex flex-col items-center justify-center shadow-md hover:shadow-xl"
                   onClick={() => deleteCard({ id: card._id })}
                 >
-                  <Trash2 size={18} color="white" className="mb-2"/>
+                  <Trash2 size={18} color="white" className="mb-2" />
                   <span className="text-xs text-[#f4f4f4]">删除</span>
                 </button>
               </div>
