@@ -6,7 +6,7 @@ import { useQuery, useMutation } from "convex/react";
 import { useState, useRef, useEffect } from "react";
 import { Loader } from "@/components/ui/loader";
 import { Button } from "@/components/ui/button";
-import { Globe } from "lucide-react";
+import { DivideIcon, Globe, Trash2 } from "lucide-react";
 
 export default function DisplayCard() {
   const cardsAll = useQuery(api.cards.getAllCards);
@@ -140,9 +140,15 @@ export default function DisplayCard() {
                   </div>
                 </div>
               </div>
-              <button className="delete-button absolute top-0 right-0 h-full bg-red-400 text-white flex items-center justify-center translate-x-[100%]" style={{ width: '75px', opacity: '0', transition: 'opacity 0.3s' }}>
-                删除
-              </button>
+              <div 
+                className="delete-button absolute top-0 right-0 h-full bg-red-400 text-white flex flex-col items-center justify-center translate-x-[100%]" 
+                style={{ width: '75px', opacity: '0', transition: 'opacity 0.3s' }}
+              >
+                <button className="delete-button-inner flex flex-col items-center justify-center shadow-md hover:shadow-xl">
+                  <Trash2 size={18} />
+                  <span className="text-xs text-[#f4f4f4]">删除</span>
+                </button>
+              </div>
             </div>
           ))
         ) : (
