@@ -56,10 +56,25 @@ export const getArchivedCards = query({
 export const updateCard = mutation({
   args: {
     id: v.id("cards"),
-    isArchived: v.boolean(),
   },
   handler: async (ctx, args) => {
-    const card = await ctx.db.patch(args.id, { isArchived: args.isArchived });
-    return card;
+    // 获取当前卡片的 isArchived 状态
+    const currentCard = await ctx.db.get(args.id);
+    if (!currentCard) {
+      throw new Error("Card not found");
+    }
+    const newIsArchived = !currentCard.isArchived;
+    
+    // 更新卡片的 isArchived 状态
+    const updatedCard = await ctx.db.patch(args.id, { isArchived: newIsArchived });
+    return updatedCard;
+  },
+});
+
+// 删除卡片
+export const deleteCard = mutation({
+  args: { id: v.id("cards") },
+  handler: async (ctx, args) => {
+    await ctx.db.delete(args.id);
   },
 });

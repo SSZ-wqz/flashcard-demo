@@ -69,15 +69,20 @@
 }
 
 .delete-button {
-  backdrop-filter: blur(10px); /* 增加模糊效果 */
-  background-color: rgba(248, 113, 113, 0.65);
-  box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); /* 强烈的阴影以增加景深 */
-  padding: 15px;
+  backdrop-filter: blur(5px); /* 增加模糊效果 */
+  background-color: rgba(255, 255, 255, 1); /* 半透明的背景 */
+  /* box-shadow: 0 4px 15px rgba(0, 0, 0, 0.15); 强烈的阴影以增加景深 */
+  padding: 1rem;
+  transition: all 0.3s ease-out;
 }
 
 .delete-button-inner {
   height: 100%;
   width: 100%;
   background-color: rgba(248, 113, 113, 1);
-  border-radius: 0 10px 10px 0;
+  border-radius: 10px;
+}
+
+#archive-button {
+  background-color: #76b4ff;
 }
