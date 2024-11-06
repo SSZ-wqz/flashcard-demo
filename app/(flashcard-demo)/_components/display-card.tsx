@@ -53,7 +53,18 @@ export default function DisplayCard() {
   }, [expandedCardId]);
 
   const setFilterCards = (cards: any) => {
-    setCardsFiltered(cards);
+    if (cards === cardsAll) {
+      // 如果是所有卡片，先显示未学会的卡片
+      // 对卡片进行排序，未学会的卡片（isArchived为false）排在前面
+      const sortedCards = [...cards].sort((a, b) => {
+        return a.isArchived === b.isArchived ? 0 : a.isArchived ? 1 : -1;
+      });
+      setCardsFiltered(sortedCards);
+    } else {
+      // 如果不是所有卡片，直接设置过滤后的卡片
+      setCardsFiltered(cards);
+    }
+    // 更新之前渲染的卡片
     setPrevCard(cards);
   };
 
@@ -113,7 +124,7 @@ export default function DisplayCard() {
             variant="outline"
             onClick={() => setFilterCards(cardsAll)}
           >
-            所有 <Globe />
+            <Globe />
           </Button>
           <Button
             className="bg-red-300 text-black hover:bg-red-500 hover:text-white"
