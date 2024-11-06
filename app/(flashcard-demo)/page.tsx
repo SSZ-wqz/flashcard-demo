@@ -13,6 +13,7 @@ export default function Home() {
       title: card.title,
       description: card.description,
       date: card.date,
+      isArchived: card.isArchived,
     });
   };
   

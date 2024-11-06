@@ -21,7 +21,7 @@ export default function CreateCard({ onCreateCard }: CreateCardProps) {
       alert("All fields are required!");
       return;
     }
-    onCreateCard(formData);
+    onCreateCard({ ...formData, isArchived: false });
     setFormData({
       title: "",
       description: "",

@@ -10,6 +10,10 @@ export const createCard = mutation({
     isArchived: v.optional(v.boolean()),
   },
   handler: async (ctx, args) => {
+    // 如果 isArchived 未定义，则默认设置为 false
+    if (args.isArchived === undefined) {
+      args.isArchived = false;
+    }
     const card = await ctx.db.insert("cards", args);
     return card;
   },
@@ -45,5 +49,17 @@ export const getArchivedCards = query({
       .filter((q) => q.eq(q.field("isArchived"), true))
       .collect();
     return cards;
+  },
+});
+
+// mutation，更新卡片，包括归档和取消归档
+export const updateCard = mutation({
+  args: {
+    id: v.id("cards"),
+    isArchived: v.boolean(),
+  },
+  handler: async (ctx, args) => {
+    const card = await ctx.db.patch(args.id, { isArchived: args.isArchived });
+    return card;
   },
 });

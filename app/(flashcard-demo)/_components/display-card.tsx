@@ -16,6 +16,8 @@ export default function DisplayCard() {
   const [cardHeight, setCardHeight] = useState<number>(200);
   const cardRef = useRef<HTMLDivElement | null>(null);
   const [cardsFiltered, setCardsFiltered] = useState<any[]>([]);
+  const [isDragging, setIsDragging] = useState(false);
+  const [cardBorderRadius, setCardBorderRadius] = useState<string>('12px');
 
   useEffect(() => {
     setCardsFiltered(cardsAll || []);
@@ -38,11 +40,49 @@ export default function DisplayCard() {
     }
   }, [expandedCardId]);
 
-  console.log(cardsUnarchived);
-  console.log(cardsArchived);
-
   const setFilterCards = (cards: any) => {
     setCardsFiltered(cards);
+  };
+
+  const handleMouseDown = (event: React.MouseEvent, cardId: string) => {
+    if (expandedCardId === cardId) return; // 如果卡片已翻转，禁用滑动
+
+    const cardElement = event.currentTarget as HTMLDivElement;
+    let startX = event.clientX;
+    let currentX = startX;
+    setIsDragging(false);
+
+    const handleMouseMove = (moveEvent: MouseEvent) => {
+      currentX = moveEvent.clientX;
+      const deltaX = currentX - startX;
+      cardElement.style.transform = `translateX(${deltaX}px)`;
+      setIsDragging(true);
+    };
+
+    const handleMouseUp = () => {
+      const deltaX = currentX - startX;
+      if (deltaX < -100) { // 如果滑动超过100px，显示删除按钮
+        cardElement.style.transform = `translateX(-100px)`;
+        (cardElement.querySelector('.delete-button') as HTMLElement)!.style.opacity = '1'; // 设置删除按钮的透明度为100%
+        (cardElement.querySelector('.delete-button') as HTMLElement)!.style.borderRadius = '0 12px 12px 0'; // 设置删除按钮的圆角为20px
+        setCardBorderRadius('12px 0 0 12px'); // 更新状态
+      } else {
+        cardElement.style.transform = `translateX(0)`;
+        (cardElement.querySelector('.delete-button') as HTMLElement)!.style.opacity = '0'; // 设置删除按钮的透明度为0
+        setCardBorderRadius('12px'); // 恢复原始圆角
+      }
+      document.removeEventListener('mousemove', handleMouseMove);
+      document.removeEventListener('mouseup', handleMouseUp);
+    };
+
+    document.addEventListener('mousemove', handleMouseMove);
+    document.addEventListener('mouseup', handleMouseUp);
+  };
+
+  const handleCardClick = (cardId: string) => {
+    if (!isDragging) { // 只有在没有拖动的情况下才翻转卡片
+      setExpandedCardId(expandedCardId === cardId ? null : cardId);
+    }
   };
 
   return (
@@ -50,7 +90,7 @@ export default function DisplayCard() {
       <header className="header-container flex justify-between items-center p-4">
         <h1 className="text-2xl font-bold">Display Card</h1>
         <div className="flex gap-2">
-        <Button 
+          <Button 
             variant="outline"
             onClick={() => setFilterCards(cardsAll)}
           >
@@ -77,13 +117,17 @@ export default function DisplayCard() {
             <div
               key={card._id}
               ref={expandedCardId === card._id ? cardRef : null}
-              className={`card-container perspective-1000 ${
+              className={`card-container perspective-1000 relative ${
                 expandedCardId === card._id ? 'flipped' : ''
               }`}
-              style={{ height: expandedCardId === card._id ? `${cardHeight}px` : '200px' }}
-              onClick={() => setExpandedCardId(expandedCardId === card._id ? null : card._id)}
+              style={{
+                height: expandedCardId === card._id ? `${cardHeight}px` : '200px',
+                borderRadius: cardBorderRadius, // 使用状态变量
+              }}
+              onMouseDown={(e) => handleMouseDown(e, card._id)}
+              onClick={() => handleCardClick(card._id)}
             >
-              <div className="card-inner relative w-full h-full transition-transform duration-500">
+              <div className="card-inner w-full h-full transition-transform duration-500">
                 <div className="card-front absolute w-full h-full bg-white rounded-lg p-6 shadow-md hover:shadow-lg backface-hidden">
                   <div className="flex flex-col justify-between h-full">
                     <h2 className="text-xl font-bold">{card.title}</h2>
@@ -96,6 +140,9 @@ export default function DisplayCard() {
                   </div>
                 </div>
               </div>
+              <button className="delete-button absolute top-0 right-0 h-full bg-red-400 text-white flex items-center justify-center translate-x-[100%]" style={{ width: '75px', opacity: '0', transition: 'opacity 0.3s' }}>
+                删除
+              </button>
             </div>
           ))
         ) : (
